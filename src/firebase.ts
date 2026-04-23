@@ -1,12 +1,13 @@
-// 🔥 Firebase Core
+// 🔥 Firebase core
 import { initializeApp } from "firebase/app";
 
-// 🔥 Firestore
-import { getFirestore } from "firebase/firestore";
-
-// 🔥 Auth (CLAVE PARA LOGIN Y CORREOS)
+// 🔐 Auth
 import { getAuth } from "firebase/auth";
 
+// 🗄️ Firestore
+import { getFirestore } from "firebase/firestore";
+
+// ⚙️ Tu configuración
 const firebaseConfig = {
   apiKey: "AIzaSyAQL6_XRvJG3YjRsDfSaSzbF_FBdrJqVjg",
   authDomain: "sact-f72ed.firebaseapp.com",
@@ -16,9 +17,11 @@ const firebaseConfig = {
   appId: "1:2514814555:web:4957ac936212255524617e"
 };
 
-// 🔥 Inicializar
+// 🚀 Inicializar app
 const app = initializeApp(firebaseConfig);
 
-// 🔥 EXPORTS
+// 🔐 Exportar Auth
+export const auth = getAuth(app);
+
+// 🗄️ Exportar Firestore
 export const db = getFirestore(app);
-export const auth = getAuth(app); // 👈 ESTE ES EL IMPORTANTE

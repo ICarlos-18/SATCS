@@ -11,6 +11,12 @@ export interface User {
   activo: boolean;
   fecha_alta: string;
   avatar?: string;
+
+  // 🔥 NUEVO (CLAVE DEL SISTEMA)
+  needsPassword?: boolean;
+
+  // 🔥 OPCIONAL (MEJOR PRÁCTICA)
+  createdAt?: any; // puedes cambiar a Timestamp si luego usas Firestore types
 }
 
 export interface Area {

@@ -4,6 +4,10 @@ import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import AppLayout from "./components/layout/AppLayout";
+
+// 🔥 IMPORTANTE
+import ErrorBoundary from "./components/ErrorBoundary";
+
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import UsersPage from "./pages/UsersPage";
@@ -18,37 +22,168 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode; allowedRoles?: string[] }) {
+/* =========================
+   🔐 PROTECTED ROUTE
+========================= */
+function ProtectedRoute({
+  children,
+  allowedRoles,
+}: {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+}) {
   const { currentUser, isAuthenticated } = useAuth();
+
   if (!isAuthenticated) return <Navigate to="/" replace />;
-  if (allowedRoles && currentUser && !allowedRoles.includes(currentUser.rol)) return <Navigate to="/dashboard" replace />;
+
+  if (
+    allowedRoles &&
+    currentUser &&
+    !allowedRoles.includes(currentUser.rol)
+  ) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return <AppLayout>{children}</AppLayout>;
 }
 
+/* =========================
+   🔓 LOGIN ROUTE
+========================= */
 function AuthRoute() {
   const { isAuthenticated } = useAuth();
+
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+
   return <LoginPage />;
 }
 
+/* =========================
+   🚀 APP
+========================= */
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
+
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+
+            {/* 🔓 LOGIN */}
             <Route path="/" element={<AuthRoute />} />
-            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-            <Route path="/usuarios" element={<ProtectedRoute allowedRoles={['admin']}><UsersPage /></ProtectedRoute>} />
-            <Route path="/areas" element={<ProtectedRoute allowedRoles={['admin']}><AreasPage /></ProtectedRoute>} />
-            <Route path="/tareas" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
-            <Route path="/evaluaciones" element={<ProtectedRoute allowedRoles={['admin', 'supervisor']}><EvaluationsPage /></ProtectedRoute>} />
-            <Route path="/sugerencias" element={<ProtectedRoute><SuggestionsPage /></ProtectedRoute>} />
-            <Route path="/avisos" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
-            <Route path="/horarios" element={<ProtectedRoute><SchedulesPage /></ProtectedRoute>} />
-            <Route path="/reportes" element={<ProtectedRoute allowedRoles={['admin']}><ReportesPage /></ProtectedRoute>} />
+
+            {/* 🧠 DASHBOARD */}
+            <Route
+              path="/dashboard"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* 👥 USERS */}
+            <Route
+              path="/usuarios"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <UsersPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* 🏢 AREAS */}
+            <Route
+              path="/areas"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <AreasPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* 📋 TASKS */}
+            <Route
+              path="/tareas"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute>
+                    <TasksPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* ⭐ EVALUACIONES */}
+            <Route
+              path="/evaluaciones"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute allowedRoles={["admin", "supervisor"]}>
+                    <EvaluationsPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* 💡 SUGERENCIAS */}
+            <Route
+              path="/sugerencias"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute>
+                    <SuggestionsPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* 📢 AVISOS */}
+            <Route
+              path="/avisos"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute>
+                    <AnnouncementsPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* ⏰ HORARIOS */}
+            <Route
+              path="/horarios"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute>
+                    <SchedulesPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* 📊 REPORTES */}
+            <Route
+              path="/reportes"
+              element={
+                <ErrorBoundary>
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <ReportesPage />
+                  </ProtectedRoute>
+                </ErrorBoundary>
+              }
+            />
+
+            {/* ❌ NOT FOUND */}
             <Route path="*" element={<NotFound />} />
+
           </Routes>
         </BrowserRouter>
       </AuthProvider>
